@@ -71,3 +71,26 @@ We also like to show how well we're testing, so there's a module called
 [coverage](https://coverage.readthedocs.io/en/coverage-5.1/) you should add to your project.
 
 
+## 6. Liens externes
+
+### Documentation officielle
+- https://flask.palletsprojects.com/en/stable/patterns/flashing/
+- https://flask.palletsprojects.com/en/stable/quickstart/#debug-mode
+- https://flask-fr.readthedocs.io/testing/#the-first-test
+
+### Sujets discussion à des fins de debug
+- https://stackoverflow.com/questions/65694813/import-flask-could-not-be-resolved-from-source-pylance
+- https://www.reddit.com/r/learnpython/comments/1070tb0/can_i_do_list_comprehension_with_a_multi_line/
+- https://stackoverflow.com/questions/14343812/redirecting-to-url-in-flask
+
+
+## 7. convention de nommage
+
+Notation hongroise : 
+d = dictionnaire
+l_dict = liste de dictionnaire
+
+
+>  Note: The default branch for this project is named `master`, following the original repository structure.
+
+
