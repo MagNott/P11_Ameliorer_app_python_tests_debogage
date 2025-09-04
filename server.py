@@ -1,6 +1,6 @@
 import json
 from flask import Flask, render_template, request, redirect, flash, url_for
-from utils import get_club_by_email
+from utils import get_club_by_email, get_club_by_name, get_competition_by_name, update_clubs_in_json
 
 
 app = Flask(__name__)
@@ -17,10 +17,6 @@ def loadCompetitions():
     with open('competitions.json') as comps:
         listOfCompetitions = json.load(comps)['competitions']
     return listOfCompetitions
-
-
-l_dict_competitions = loadCompetitions()
-l_dict_clubs = loadClubs()
 
 
 @app.route('/')
@@ -46,6 +42,9 @@ def showSummary():
           competitions.
         - Redirects to '/' if the email is invalid.
     """
+    l_dict_competitions = loadCompetitions()
+    l_dict_clubs = loadClubs()
+
     email_connexion = request.form['email']
     try:
         selected_club = get_club_by_email(l_dict_clubs, email_connexion)
@@ -61,24 +60,79 @@ def showSummary():
 
 
 @app.route('/book/<competition>/<club>')
-def book(competition,club):
+def book(competition, club):
+    l_dict_competitions = loadCompetitions()
+    l_dict_clubs = loadClubs()
+
     foundClub = [c for c in l_dict_clubs if c['name'] == club][0]
-    foundCompetition = [c for c in competitions if c['name'] == competition][0]
+    foundCompetition = [
+        c for c in l_dict_competitions if c['name'] == competition
+    ][0]
     if foundClub and foundCompetition:
-        return render_template('booking.html',club=foundClub,competition=foundCompetition)
+        return render_template(
+            'booking.html',
+            club=foundClub,
+            competition=foundCompetition
+        )
     else:
         flash("Something went wrong-please try again")
-        return render_template('welcome.html', club=club, competitions=competitions)
+        return render_template(
+            'welcome.html',
+            club=club,
+            competitions=foundCompetition
+        )
 
 
 @app.route('/purchasePlaces',methods=['POST'])
 def purchasePlaces():
-    competition = [c for c in competitions if c['name'] == request.form['competition']][0]
-    club = [c for c in l_dict_clubs if c['name'] == request.form['club']][0]
-    placesRequired = int(request.form['places'])
-    competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
-    flash('Great-booking complete!')
-    return render_template('welcome.html', club=club, competitions=competitions)
+    """
+    Manage to book places of competition. This route processes a POST
+    request to reserve a number of places for a club in a specific competition.
+    - Retrieves club and competition from form data.
+    - Checks if the club has enough points.
+    - If valid, deducts points and updates available places.
+    - Saves updated club data to JSON.
+    - Displays success or error message.
+
+    Returns:
+        Rendered 'welcome.html' with updated data.
+    """
+    l_dict_competitions = loadCompetitions()
+    l_dict_clubs = loadClubs()
+
+    try:
+        name_competition = request.form['competition']
+        selected_competition = get_competition_by_name(
+            l_dict_competitions,
+            name_competition
+        )
+
+        name_club = request.form['club']
+        selected_club = get_club_by_name(
+            l_dict_clubs,
+            name_club
+        )
+
+    except IndexError:
+        flash("The club or the competition cannot be found")
+        return redirect("/")
+
+    points_club = int(selected_club["points"])
+    places_required = int(request.form['places'])
+
+    if places_required > points_club:
+        flash('Insufficient points to complete this reservation')
+    else:
+        points_competition = int(selected_competition['numberOfPlaces'])
+        selected_competition['numberOfPlaces'] = points_competition - places_required
+        flash('Great-booking complete!')
+        selected_club['points'] = str(points_club - places_required)
+        update_clubs_in_json(l_dict_clubs)
+    return render_template(
+        'welcome.html',
+        club=selected_club,
+        competitions=l_dict_competitions
+    )
 
 
 # TODO: Add route for points display
@@ -89,4 +143,5 @@ def logout():
     return redirect(url_for('index'))
 
 
-if __name__ == "__main__": app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)

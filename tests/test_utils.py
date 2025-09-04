@@ -1,50 +1,66 @@
-from utils import get_club_by_email
+from utils import get_club_by_email, \
+                  get_club_by_name, \
+                  get_competition_by_name, \
+                  update_clubs_in_json
 import pytest
+from unittest.mock import mock_open, patch
 
 
-def test_email_found_returns_club():
+def test_email_found_returns_club(clubs_data):
 
-    club_list = {"clubs":[
-        {
-            "name": "Club1",
-            "email": "email@club1.com",
-            "points": "0"
-        },
-        {
-            "name": "Club2",
-            "email": "email@club2.com",
-            "points": "0"
-        },
-        {   "name": "Club3",
-            "email": "email@club3.com",
-            "points": "0"
-        }
-    ]}
     email_fourni = "email@club3.com"
-    selected_club = get_club_by_email(club_list["clubs"], email_fourni)
+    selected_club = get_club_by_email(clubs_data["clubs"], email_fourni)
 
     assert selected_club['email'] == "email@club3.com"
 
 
-def test_email_not_found_raises_error():
+def test_email_not_found_raises_error(clubs_data):
 
-    club_list = {"clubs":[
-        {
-            "name": "Club1",
-            "email": "email@club1.com",
-            "points": "0"
-        },
-        {
-            "name": "Club2",
-            "email": "email@club2.com",
-            "points": "0"
-        },
-        {   "name": "Club3",
-            "email": "email@club3.com",
-            "points": "0"
-        }
-    ]}
     email_fourni = "email@club4.com"
 
     with pytest.raises(IndexError):
-        get_club_by_email(club_list["clubs"], email_fourni)
+        get_club_by_email(clubs_data["clubs"], email_fourni)
+
+
+def test_club_name_found_return_club(clubs_data):
+
+    name_given = "Club2"
+    selected_club = get_club_by_name(clubs_data["clubs"], name_given)
+
+    assert selected_club['name'] == "Club2"
+
+
+def test_club_name_not_found_raises_error(clubs_data):
+
+    name_given = "Club10"
+
+    with pytest.raises(IndexError):
+        get_club_by_name(clubs_data["clubs"], name_given)
+
+
+def test_competition_name_found_return_competition(competitions_data):
+
+    name_given = "Competition1"
+    selected_club = get_competition_by_name(
+        competitions_data["competitions"],
+        name_given
+    )
+
+    assert selected_club['name'] == "Competition1"
+
+
+def test_competition_name_not_found_raises_error(competitions_data):
+
+    name_given = "Competition10"
+
+    with pytest.raises(IndexError):
+        get_competition_by_name(competitions_data["competitions"], name_given)
+
+
+def test_update_clubs_in_json():
+    mock_file = mock_open()
+    with patch("builtins.open", mock_file):
+        update_clubs_in_json([{"name": "Club1", "points": 10}])
+
+    # Vérifiez que 'write' a été appelé au moins une fois
+    assert mock_file().write.called
