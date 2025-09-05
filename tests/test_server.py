@@ -32,7 +32,7 @@ def test_email_valid(client):
     assert b"Email inconnu" not in response.data
 
 
-def test_purchase_enough_points(
+def test_purchase_club_has_enough_points(
         client,
         mock_file_write,
         clubs_data,
@@ -56,7 +56,7 @@ def test_purchase_enough_points(
         assert mock_file_write().write.called
 
 
-def test_purchase_not_enough_points(
+def test_purchase_club_has_not_enough_points(
         client,
         mock_file_write,
         clubs_data,
@@ -77,3 +77,55 @@ def test_purchase_not_enough_points(
         assert response.status_code == 200
         assert b"Insufficient points to complete this reservation" in response.data
         assert not mock_file_write().write.called
+
+
+def test_purchase_more_than_12_places_should_fail(
+        client,
+        mock_file_write,
+        clubs_data,
+        competitions_data):
+    with patch("server.loadClubs", return_value=clubs_data["clubs"]), \
+         patch(
+             "server.loadCompetitions",
+             return_value=competitions_data["competitions"]):
+
+        original_places = competitions_data["competitions"][0]["numberOfPlaces"]
+        nom_competition = competitions_data["competitions"][0]["name"]
+        nom_club = clubs_data["clubs"][0]["name"]
+        response = client.post('/purchasePlaces', data={
+            'competition': nom_competition,
+            'club': nom_club,
+            'places': '13'
+            },
+            follow_redirects=True)
+
+        assert response.status_code == 200
+        assert b"One club cannot book more than 12 places for a single competition" in response.data
+        assert not mock_file_write().write.called
+        assert competitions_data["competitions"][0]["numberOfPlaces"] == original_places
+
+
+def test_purchase_12_or_less_places_should_succeed(
+        client,
+        mock_file_write,
+        clubs_data,
+        competitions_data):
+    with patch("server.loadClubs", return_value=clubs_data["clubs"]), \
+         patch(
+             "server.loadCompetitions",
+             return_value=competitions_data["competitions"]):
+
+        original_places = competitions_data["competitions"][0]["numberOfPlaces"]
+        nom_competition = competitions_data["competitions"][0]["name"]
+        nom_club = clubs_data["clubs"][0]["name"]
+        response = client.post('/purchasePlaces', data={
+            'competition': nom_competition,
+            'club': nom_club,
+            'places': '2'
+            },
+            follow_redirects=True)
+
+        assert response.status_code == 200
+        assert b"Great-booking complete!" in response.data
+        assert mock_file_write().write.called
+        assert competitions_data["competitions"][0]["numberOfPlaces"] != original_places

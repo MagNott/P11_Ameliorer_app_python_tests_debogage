@@ -31,3 +31,8 @@ def get_competition_by_name(p_l_dict_competitions, p_name_competition):
 def update_clubs_in_json(p_l_dict_clubs):
     with open("clubs.json", "w") as f:
         json.dump({"clubs": p_l_dict_clubs}, f, indent=4)
+
+
+def update_competitions_in_json(p_l_dict_competitions):
+    with open("competitions.json", "w") as f:
+        json.dump({"competitions": p_l_dict_competitions}, f, indent=4)

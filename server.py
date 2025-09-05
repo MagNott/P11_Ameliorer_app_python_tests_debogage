@@ -1,6 +1,6 @@
 import json
 from flask import Flask, render_template, request, redirect, flash, url_for
-from utils import get_club_by_email, get_club_by_name, get_competition_by_name, update_clubs_in_json
+from utils import get_club_by_email, get_club_by_name, get_competition_by_name, update_clubs_in_json, update_competitions_in_json
 
 
 app = Flask(__name__)
@@ -64,22 +64,26 @@ def book(competition, club):
     l_dict_competitions = loadCompetitions()
     l_dict_clubs = loadClubs()
 
-    foundClub = [c for c in l_dict_clubs if c['name'] == club][0]
-    foundCompetition = [
-        c for c in l_dict_competitions if c['name'] == competition
-    ][0]
-    if foundClub and foundCompetition:
+    name_club = club
+    selected_club = get_club_by_name(l_dict_clubs, name_club)
+
+    name_competition = competition
+    selected_competition = get_competition_by_name(
+        l_dict_competitions,
+        name_competition)
+
+    if selected_club and selected_competition:
         return render_template(
             'booking.html',
-            club=foundClub,
-            competition=foundCompetition
+            club=selected_club,
+            competition=selected_competition
         )
     else:
         flash("Something went wrong-please try again")
         return render_template(
             'welcome.html',
-            club=club,
-            competitions=foundCompetition
+            club=selected_club,
+            competitions=selected_competition
         )
 
 
@@ -90,7 +94,9 @@ def purchasePlaces():
     request to reserve a number of places for a club in a specific competition.
     - Retrieves club and competition from form data.
     - Checks if the club has enough points.
+    - Checks if the club try to book more than 12 places on a competition
     - If valid, deducts points and updates available places.
+    - Saves updated competition data to JSON
     - Saves updated club data to JSON.
     - Displays success or error message.
 
@@ -122,12 +128,19 @@ def purchasePlaces():
 
     if places_required > points_club:
         flash('Insufficient points to complete this reservation')
+    elif places_required > 12:
+        flash('One club cannot book more than 12 places for a single competition')
     else:
         points_competition = int(selected_competition['numberOfPlaces'])
-        selected_competition['numberOfPlaces'] = points_competition - places_required
+
+        selected_competition['numberOfPlaces'] = str(points_competition - places_required)
+        update_competitions_in_json(l_dict_competitions)
+
         flash('Great-booking complete!')
+
         selected_club['points'] = str(points_club - places_required)
         update_clubs_in_json(l_dict_clubs)
+
     return render_template(
         'welcome.html',
         club=selected_club,
