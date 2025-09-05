@@ -7,7 +7,7 @@ def clubs_data():
         {
             "name": "Club1",
             "email": "email@club1.com",
-            "points": "12"
+            "points": "50"
         },
         {
             "name": "Club2",

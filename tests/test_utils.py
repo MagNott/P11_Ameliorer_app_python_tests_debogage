@@ -64,3 +64,11 @@ def test_update_clubs_in_json():
 
     # Vérifiez que 'write' a été appelé au moins une fois
     assert mock_file().write.called
+
+
+def test_update_competitions_in_json():
+    mock_file = mock_open()
+    with patch("builtins.open", mock_file):
+        update_clubs_in_json([{"name": "competition1", "date": "2025-10-22 13:30:00", "numberOfPlaces": 10}])
+
+    assert mock_file().write.called
