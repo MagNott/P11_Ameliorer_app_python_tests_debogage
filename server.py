@@ -1,22 +1,12 @@
-import json
 from flask import Flask, render_template, request, redirect, flash, url_for
-from utils import get_club_by_email, get_club_by_name, get_competition_by_name, update_clubs_in_json, update_competitions_in_json
+from utils import get_club_by_email, get_club_by_name, get_competition_by_name
+from utils import update_clubs_in_json, update_competitions_in_json
+from utils import load_clubs, load_competitions
+from datetime import datetime
 
 
 app = Flask(__name__)
 app.secret_key = 'something_special'
-
-
-def loadClubs():
-    with open('clubs.json') as c:
-        listOfClubs = json.load(c)['clubs']
-    return listOfClubs
-
-
-def loadCompetitions():
-    with open('competitions.json') as comps:
-        listOfCompetitions = json.load(comps)['competitions']
-    return listOfCompetitions
 
 
 @app.route('/')
@@ -42,8 +32,9 @@ def showSummary():
           competitions.
         - Redirects to '/' if the email is invalid.
     """
-    l_dict_competitions = loadCompetitions()
-    l_dict_clubs = loadClubs()
+    l_dict_competitions = load_competitions()
+    l_dict_clubs = load_clubs()
+    today_date = datetime.now()
 
     email_connexion = request.form['email']
     try:
@@ -55,39 +46,64 @@ def showSummary():
     return render_template(
         'welcome.html',
         club=selected_club,
-        competitions=l_dict_competitions
+        competitions=l_dict_competitions,
+        today_date=today_date
     )
 
 
 @app.route('/book/<competition>/<club>')
 def book(competition, club):
-    l_dict_competitions = loadCompetitions()
-    l_dict_clubs = loadClubs()
+    """
+    Display the booking page for a club and competition.
 
-    name_club = club
-    selected_club = get_club_by_name(l_dict_clubs, name_club)
+    If the competition is in the past, show an error and return to the home
+    page.
+    Otherwise, render the booking page.
 
-    name_competition = competition
-    selected_competition = get_competition_by_name(
-        l_dict_competitions,
-        name_competition)
+    Args:
+        competition (str): Name of the competition.
+        club (str): Name of the club.
 
-    if selected_club and selected_competition:
-        return render_template(
-            'booking.html',
-            club=selected_club,
-            competition=selected_competition
-        )
-    else:
-        flash("Something went wrong-please try again")
+    Returns:
+        Rendered HTML page (booking or welcome).
+    """
+    l_dict_competitions = load_competitions()
+    l_dict_clubs = load_clubs()
+
+    try:
+        name_club = club
+        selected_club = get_club_by_name(l_dict_clubs, name_club)
+
+        name_competition = competition
+        selected_competition = get_competition_by_name(
+            l_dict_competitions,
+            name_competition)
+
+    except IndexError:
+        flash("The club or the competition cannot be found, please log in again !")
+        return redirect("/")
+
+    today_date = datetime.now()
+
+    date_competition = selected_competition["date"]
+    if date_competition < today_date:
+        flash("The competition's date must be superior or equal to today's date")
         return render_template(
             'welcome.html',
             club=selected_club,
-            competitions=selected_competition
+            competitions=l_dict_competitions,
+            today_date=today_date
+        )
+    elif selected_club and selected_competition:
+        return render_template(
+            'booking.html',
+            club=selected_club,
+            competition=selected_competition,
+            today_date=today_date
         )
 
 
-@app.route('/purchasePlaces',methods=['POST'])
+@app.route('/purchasePlaces', methods=['POST'])
 def purchasePlaces():
     """
     Manage to book places of competition. This route processes a POST
@@ -103,8 +119,9 @@ def purchasePlaces():
     Returns:
         Rendered 'welcome.html' with updated data.
     """
-    l_dict_competitions = loadCompetitions()
-    l_dict_clubs = loadClubs()
+    l_dict_competitions = load_competitions()
+    l_dict_clubs = load_clubs()
+    today_date = datetime.now()
 
     try:
         name_competition = request.form['competition']
@@ -144,7 +161,8 @@ def purchasePlaces():
     return render_template(
         'welcome.html',
         club=selected_club,
-        competitions=l_dict_competitions
+        competitions=l_dict_competitions,
+        today_date=today_date
     )
 
 

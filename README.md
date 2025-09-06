@@ -77,16 +77,23 @@ We also like to show how well we're testing, so there's a module called
 - https://flask.palletsprojects.com/en/stable/patterns/flashing/
 - https://flask.palletsprojects.com/en/stable/quickstart/#debug-mode
 - https://flask-fr.readthedocs.io/testing/#the-first-test
+- https://docs.python.org/3/library/unittest.mock.html
+- https://docs.python.org/3/library/datetime.html
+- https://docs.python.org/fr/3.13/library/copy.html
+
+
+
 
 ### Sujets discussion à des fins de debug
 - https://stackoverflow.com/questions/65694813/import-flask-could-not-be-resolved-from-source-pylance
 - https://www.reddit.com/r/learnpython/comments/1070tb0/can_i_do_list_comprehension_with_a_multi_line/
 - https://stackoverflow.com/questions/14343812/redirecting-to-url-in-flask
-
+- https://stackoverflow.com/questions/70743462/json-dumps-while-reading-file-as-mock-open
 
 ## 7. convention de nommage
 
 Notation hongroise : 
+p = paramètre de fonction (utilitaire)
 d = dictionnaire
 l_dict = liste de dictionnaire
 

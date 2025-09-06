@@ -38,9 +38,9 @@ def test_purchase_club_has_enough_points(
         clubs_data,
         competitions_data
 ):
-    with patch("server.loadClubs", return_value=clubs_data["clubs"]), \
+    with patch("server.load_clubs", return_value=clubs_data["clubs"]), \
          patch(
-             "server.loadCompetitions",
+             "server.load_competitions",
              return_value=competitions_data["competitions"]):
 
         nom_competition = competitions_data["competitions"][0]["name"]
@@ -61,9 +61,9 @@ def test_purchase_club_has_not_enough_points(
         mock_file_write,
         clubs_data,
         competitions_data):
-    with patch("server.loadClubs", return_value=clubs_data["clubs"]), \
+    with patch("server.load_clubs", return_value=clubs_data["clubs"]), \
          patch(
-             "server.loadCompetitions",
+             "server.load_competitions",
              return_value=competitions_data["competitions"]):
 
         nom_competition = competitions_data["competitions"][0]["name"]
@@ -84,9 +84,9 @@ def test_purchase_more_than_12_places_should_fail(
         mock_file_write,
         clubs_data,
         competitions_data):
-    with patch("server.loadClubs", return_value=clubs_data["clubs"]), \
+    with patch("server.load_clubs", return_value=clubs_data["clubs"]), \
          patch(
-             "server.loadCompetitions",
+             "server.load_competitions",
              return_value=competitions_data["competitions"]):
 
         original_places = competitions_data["competitions"][0]["numberOfPlaces"]
@@ -110,9 +110,9 @@ def test_purchase_12_or_less_places_should_succeed(
         mock_file_write,
         clubs_data,
         competitions_data):
-    with patch("server.loadClubs", return_value=clubs_data["clubs"]), \
+    with patch("server.load_clubs", return_value=clubs_data["clubs"]), \
          patch(
-             "server.loadCompetitions",
+             "server.load_competitions",
              return_value=competitions_data["competitions"]):
 
         original_places = competitions_data["competitions"][0]["numberOfPlaces"]
@@ -129,3 +129,39 @@ def test_purchase_12_or_less_places_should_succeed(
         assert b"Great-booking complete!" in response.data
         assert mock_file_write().write.called
         assert competitions_data["competitions"][0]["numberOfPlaces"] != original_places
+
+
+def test_book_competition_when_future_date(
+        client,
+        mock_file_write,
+        clubs_data,
+        competitions_data):
+
+    with patch("server.load_clubs", return_value=clubs_data["clubs"]), \
+         patch(
+             "server.load_competitions",
+             return_value=competitions_data["competitions"]):
+
+        response = client.get('/book/Competition1/Club2')
+
+        assert response.status_code == 200
+        assert b"" in response.data
+        assert not mock_file_write().write.called
+
+
+def test_book_competition_when_passed_date(
+        client,
+        mock_file_write,
+        clubs_data,
+        competitions_data):
+
+    with patch("server.load_clubs", return_value=clubs_data["clubs"]), \
+         patch(
+            "server.load_competitions",
+            return_value=competitions_data["competitions"]):
+
+        response = client.get('/book/Competition2/Club2')
+
+        assert response.status_code == 200
+        assert b"must be superior or equal" in response.data
+        assert not mock_file_write().write.called
