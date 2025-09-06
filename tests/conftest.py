@@ -1,3 +1,4 @@
+from datetime import datetime
 import pytest
 
 
@@ -28,7 +29,31 @@ def competitions_data():
     competitions_list = {"competitions": [
         {
             "name": "Competition1",
-            "date": "2025-11-27 10:00:00",
+            "date": datetime.strptime(
+                "2999-11-27 10:00:00",
+                "%Y-%m-%d %H:%M:%S"
+            ),
+            "numberOfPlaces": "25"
+        },
+        {
+            "name": "Competition2",
+            "date": datetime.strptime(
+                "2020-10-22 13:30:00",
+                "%Y-%m-%d %H:%M:%S"
+            ),
+            "numberOfPlaces": "13"
+        }
+    ]}
+
+    return competitions_list
+
+
+@pytest.fixture
+def competitions_data_str():
+    competitions_list = {"competitions": [
+        {
+            "name": "Competition1",
+            "date": "2999-11-27 10:00:00",
             "numberOfPlaces": "25"
         },
         {
