@@ -41,6 +41,9 @@ def get_club_by_email(p_l_dict_clubs, p_email_connexion):
         for d_club in p_l_dict_clubs
         if d_club['email'] == p_email_connexion
     ]
+    print(f"📨 Recherche de l'email : {p_email_connexion}")
+    print(f"📂 Données reçues : {p_l_dict_clubs}")
+
     return selected_club[0]
 
 

@@ -78,6 +78,7 @@ We also like to show how well we're testing, so there's a module called
 - https://flask.palletsprojects.com/en/stable/quickstart/#debug-mode
 - https://flask-fr.readthedocs.io/testing/#the-first-test
 - https://docs.python.org/3/library/unittest.mock.html
+- https://docs.pytest.org/en/6.2.x/fixture.html#teardown-cleanup-aka-fixture-finalization
 - https://docs.python.org/3/library/datetime.html
 - https://docs.python.org/fr/3.13/library/copy.html
 
