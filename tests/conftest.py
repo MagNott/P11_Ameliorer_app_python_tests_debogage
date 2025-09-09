@@ -1,5 +1,26 @@
 from datetime import datetime
 import pytest
+from unittest.mock import mock_open, patch
+from server import app
+
+
+@pytest.fixture
+def client():
+    with app.test_client() as client:
+        yield client
+
+
+@pytest.fixture
+def mock_file_write():
+    with patch("builtins.open", mock_open()) as mocked_file:
+        yield mocked_file
+
+
+@pytest.fixture
+def patch_clubs_and_competitions(clubs_data, competitions_data):
+    with patch("server.load_clubs", return_value=clubs_data["clubs"]), \
+         patch("server.load_competitions", return_value=competitions_data["competitions"]):
+        yield
 
 
 @pytest.fixture

@@ -1,0 +1,54 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUDLFT - Displaying Club Points</title>
+
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin: 20px auto;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #dfdfdfbd;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 60px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the GUDLFT Club Points Table!</h1>
+
+    <table>
+        <thead>
+            <tr>
+            <th>Club name</th>
+            <th>Club mail</th>
+            <th>Number of points</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for club in clubs %}
+        <tr>
+            <td>{{club['name']}}</td>
+            <td>{{club['email']}}</td>
+            <td>{{club['points']}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+</body>
+</html>
