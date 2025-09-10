@@ -33,9 +33,17 @@ def test_purchase_club_has_enough_points(
         'places': '2'
         },
         follow_redirects=True)
+
+    # reconstruction data of dump to look inside de file mocked
+    handle = mock_file_write()
+    written = "".join(call.args[0] for call in handle.write.call_args_list)
+
     assert response.status_code == 200
     assert b"Great-booking complete!" in response.data
     assert mock_file_write().write.called
+    assert nom_competition in written
+    assert nom_club in written
+    assert "48" in written
 
 
 def test_purchase_club_has_not_enough_points(
@@ -44,6 +52,7 @@ def test_purchase_club_has_not_enough_points(
         clubs_data,
         competitions_data):
 
+    club_points = clubs_data["clubs"][0]["points"]
     nom_competition = competitions_data["competitions"][0]["name"]
     nom_club = clubs_data["clubs"][0]["name"]
     response = client.post('/purchasePlaces', data={
@@ -52,8 +61,10 @@ def test_purchase_club_has_not_enough_points(
         'places': '99'
         },
         follow_redirects=True)
+
     assert response.status_code == 200
     assert b"Insufficient points to complete this reservation" in response.data
+    assert clubs_data["clubs"][0]["points"] == club_points
 
 
 def test_purchase_more_than_12_places_should_fail(
@@ -62,7 +73,6 @@ def test_purchase_more_than_12_places_should_fail(
         clubs_data,
         competitions_data):
 
-    original_places = competitions_data["competitions"][0]["numberOfPlaces"]
     nom_competition = competitions_data["competitions"][0]["name"]
     nom_club = clubs_data["clubs"][0]["name"]
     response = client.post('/purchasePlaces', data={
@@ -74,7 +84,7 @@ def test_purchase_more_than_12_places_should_fail(
 
     assert response.status_code == 200
     assert b"One club cannot book more than 12 places for a single competition" in response.data
-    assert competitions_data["competitions"][0]["numberOfPlaces"] == original_places
+    assert competitions_data["competitions"][0]["numberOfPlaces"] == "25"
 
 
 def test_purchase_12_or_less_places_should_succeed(
@@ -84,7 +94,6 @@ def test_purchase_12_or_less_places_should_succeed(
         clubs_data,
         competitions_data):
 
-    original_places = competitions_data["competitions"][0]["numberOfPlaces"]
     nom_competition = competitions_data["competitions"][0]["name"]
     nom_club = clubs_data["clubs"][0]["name"]
     response = client.post('/purchasePlaces', data={
@@ -97,7 +106,7 @@ def test_purchase_12_or_less_places_should_succeed(
     assert response.status_code == 200
     assert b"Great-booking complete!" in response.data
     assert mock_file_write().write.called
-    assert competitions_data["competitions"][0]["numberOfPlaces"] != original_places
+    assert competitions_data["competitions"][0]["numberOfPlaces"] == "23"
 
 
 def test_book_competition_when_future_date(
