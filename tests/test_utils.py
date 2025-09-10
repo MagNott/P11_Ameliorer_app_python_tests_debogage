@@ -13,32 +13,43 @@ import json
 def test_load_clubs(clubs_data):
     mock_file = mock_open(read_data=json.dumps(clubs_data))
     with patch("builtins.open", mock_file):
-        load_clubs()
+        result = load_clubs()
     assert mock_file().read.called
+    assert result == clubs_data["clubs"]
 
 
-def test_load_competitions(competitions_data_str):
+def test_load_competitions(competitions_data_str, competitions_data):
     mock_file = mock_open(read_data=json.dumps(competitions_data_str))
     with patch("builtins.open", mock_file):
-        load_competitions()
+        result = load_competitions()
     assert mock_file().read.called
+    assert result == competitions_data["competitions"]
 
 
-def test_update_clubs_in_json():
-    mock_file = mock_open()
-    with patch("builtins.open", mock_file):
-        update_clubs_in_json([{"name": "Club1", "points": 10}])
+def test_update_clubs_in_json(mock_file_write):
+    update_clubs_in_json([{"name": "Club1", "points": 10}])
 
-    # Vérifiez que 'write' a été appelé au moins une fois
-    assert mock_file().write.called
+    assert mock_file_write().write.called
+
+    # reconstruction data of dump to look inside de file mocked
+    handle = mock_file_write()
+    written = "".join(call.args[0] for call in handle.write.call_args_list)
+
+    assert '"name": "Club1"' in written
+    assert '"points": 10' in written
 
 
-def test_update_competitions_in_json():
-    mock_file = mock_open()
-    with patch("builtins.open", mock_file):
-        update_clubs_in_json([{"name": "competition1", "date": "2025-10-22 13:30:00", "numberOfPlaces": 10}])
+def test_update_competitions_in_json(mock_file_write):
+    update_clubs_in_json([{"name": "competition1", "date": "2025-10-22 13:30:00", "numberOfPlaces": 10}])
 
-    assert mock_file().write.called
+    assert mock_file_write().write.called
+
+    handle = mock_file_write()
+    written = "".join(call.args[0] for call in handle.write.call_args_list)
+
+    assert '"name": "competition1"' in written
+    assert '"date": "2025-10-22 13:30:00"' in written
+    assert '"numberOfPlaces": 10' in written
 
 
 # TESTS GETTERS
