@@ -5,24 +5,38 @@ import os
 
 
 CLUBS_FILE = "clubs_test.json" if os.getenv("FLASK_ENV") == "performance" else "clubs.json"
-COMPETITIONS_FILE = "comptetitions_test.json" if os.getenv("FLASK_ENV") == "performance" else "comptetitions.json"
+COMPETITIONS_FILE = "competitions_test.json" if os.getenv("FLASK_ENV") == "performance" else "competitions.json"
 
 
 # FILES MANAGEMENTS
 def load_clubs():
-    with open(CLUBS_FILE) as c:
-        listOfClubs = json.load(c)['clubs']
-    return listOfClubs
+    try:
+        with open(CLUBS_FILE) as club:
+            listOfClubs = json.load(club)['clubs']
+        return listOfClubs
+    except FileNotFoundError:
+        print(f"Fichier {CLUBS_FILE} introuvable.")
+        return []
+    except json.JSONDecodeError:
+        print(f"Le contenu de {CLUBS_FILE} est invalide.")
+        return []
 
 
 def load_competitions():
-    with open(COMPETITIONS_FILE) as competitions:
-        listOfCompetitions = json.load(competitions)['competitions']
-    for competition in listOfCompetitions:
-        object_date = datetime.strptime(competition["date"], "%Y-%m-%d %H:%M:%S")
-        competition["date"] = object_date
+    try:
+        with open(COMPETITIONS_FILE) as competitions:
+            listOfCompetitions = json.load(competitions)['competitions']
+        for competition in listOfCompetitions:
+            object_date = datetime.strptime(competition["date"], "%Y-%m-%d %H:%M:%S")
+            competition["date"] = object_date
 
-    return listOfCompetitions
+        return listOfCompetitions
+    except FileNotFoundError:
+        print(f" Fichier {COMPETITIONS_FILE} introuvable.")
+        return []
+    except json.JSONDecodeError:
+        print(f"Le contenu de {COMPETITIONS_FILE} est invalide.")
+        return []
 
 
 def update_clubs_in_json(p_l_dict_clubs):

@@ -81,6 +81,12 @@ We also like to show how well we're testing, so there's a module called
 - https://docs.pytest.org/en/6.2.x/fixture.html#teardown-cleanup-aka-fixture-finalization
 - https://docs.python.org/3/library/datetime.html
 - https://docs.python.org/fr/3.13/library/copy.html
+- https://docs.python.org/3/library/unittest.mock.html#unittest.mock.Mock.call_args_list
+- https://docs.locust.io/en/stable/installation.html
+- https://docs.locust.io/en/stable/quickstart.html
+- https://docs.python.org/3/library/exceptions.html
+- https://careerkarma.com/blog/python-jsondecodeerror/
+
 
 
 
