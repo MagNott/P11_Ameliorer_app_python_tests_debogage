@@ -7,8 +7,13 @@
         },
         {
             "name": "Fall Classic",
-            "date": "2025-10-22 13:30:00",
-            "numberOfPlaces": "49902"
+            "date": "2999-10-22 13:30:00",
+            "numberOfPlaces": "49806"
+        },
+        {
+            "name": "Winter Classic",
+            "date": "2999-12-25 13:30:00",
+            "numberOfPlaces": "44961"
         }
     ]
 }

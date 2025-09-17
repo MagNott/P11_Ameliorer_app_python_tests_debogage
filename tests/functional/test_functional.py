@@ -110,7 +110,7 @@ def test_full_booking_workflow_with_invalid_scenarios(
     nom_club = clubs_data["clubs"][0]["name"]
 
     # SAD PATH competition not found
-    response_booking_page = client.get(f'/book/fake_competition/Club1',
+    response_booking_page = client.get('/book/fake_competition/Club1',
                                        follow_redirects=True)
     assert response_booking_page.status_code == 200
     msg = b"The club or the competition cannot be found, please log in again !"
