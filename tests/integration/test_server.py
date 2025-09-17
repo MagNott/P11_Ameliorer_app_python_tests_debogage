@@ -1,7 +1,6 @@
 from unittest.mock import patch
 
 
-# test intégrations
 def test_email_not_valid(client):
     response = client.post('/showSummary', data={
         'email': 'clubconnnu@example.com'},
@@ -83,7 +82,7 @@ def test_purchase_more_than_12_places_should_fail(
         follow_redirects=True)
 
     assert response.status_code == 200
-    assert b"One club cannot book more than 12 places for a single competition" in response.data
+    assert b"One club cannot book more than 12 places for a single competition"in response.data
     assert competitions_data["competitions"][0]["numberOfPlaces"] == "25"
 
 

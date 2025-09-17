@@ -40,7 +40,9 @@ def test_update_clubs_in_json(mock_file_write):
 
 
 def test_update_competitions_in_json(mock_file_write):
-    update_clubs_in_json([{"name": "competition1", "date": "2025-10-22 13:30:00", "numberOfPlaces": 10}])
+    update_clubs_in_json([{"name": "competition1",
+                           "date": "2025-10-22 13:30:00",
+                           "numberOfPlaces": 10}])
 
     assert mock_file_write().write.called
 

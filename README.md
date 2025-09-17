@@ -71,6 +71,8 @@ We also like to show how well we're testing, so there's a module called
 [coverage](https://coverage.readthedocs.io/en/coverage-5.1/) you should add to your project.
 
 
+To launch the tests : pytest tests/
+
 ## 6. Liens externes
 
 ### Documentation officielle
@@ -84,7 +86,8 @@ We also like to show how well we're testing, so there's a module called
 - https://docs.python.org/3/library/unittest.mock.html#unittest.mock.Mock.call_args_list
 - https://docs.locust.io/en/stable/installation.html
 - https://docs.locust.io/en/stable/quickstart.html
-- https://docs.python.org/3/library/exceptions.html
+- https://docs.python.org/3/library/exceptions.html#FileNotFoundError
+- https://www.docstring.fr/formations/faq/resolution-derreurs/que-signifie-une-erreur-de-type-filenotfounderror/
 - https://careerkarma.com/blog/python-jsondecodeerror/
 
 
