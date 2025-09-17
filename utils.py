@@ -4,8 +4,8 @@ from copy import deepcopy
 import os
 
 
-CLUBS_FILE = "clubs_test.json" if os.getenv("FLASK_ENV") == "performance" else "clubs.json"
-COMPETITIONS_FILE = "competitions_test.json" if os.getenv("FLASK_ENV") == "performance" else "competitions.json"
+CLUBS_FILE = "tests/data/clubs_test.json" if os.getenv("FLASK_ENV") == "performance" else "clubs.json"
+COMPETITIONS_FILE = "tests/data/competitions_test.json" if os.getenv("FLASK_ENV") == "performance" else "competitions.json"
 
 
 # FILES MANAGEMENTS

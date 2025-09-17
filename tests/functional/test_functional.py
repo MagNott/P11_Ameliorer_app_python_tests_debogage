@@ -46,7 +46,10 @@ def test_secretary_can_book_competition_and_view_points(
             'places': '2'
             },
             follow_redirects=True)
-        competition = next(competition for competition in competitions_data["competitions"] if competition["name"] == nom_competition)
+        competition = next(
+            competition
+            for competition in competitions_data["competitions"]
+            if competition["name"] == nom_competition)
         assert int(competition['numberOfPlaces']) == (25 - 2)
         assert response_purchase_places.status_code == 200
         assert b"Great-booking complete!" in response_purchase_places.data
