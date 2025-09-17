@@ -60,6 +60,10 @@ def test_secretary_can_book_competition_and_view_points(
     assert response_clubs.status_code == 200
     assert b"Club name" in response_clubs.data
     assert b"email@club1.com" in response_clubs.data
-    # AJOUTER LA DECONNEXION
+
+    response_logout = client.get('/logout', follow_redirects=True)
+
+    assert response_logout.status_code == 200
+    assert b"Welcome" in response_logout.data
 
     # LE TEST DE LA GALERE
