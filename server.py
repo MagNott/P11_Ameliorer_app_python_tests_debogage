@@ -6,15 +6,15 @@ from datetime import datetime
 
 
 app = Flask(__name__)
-app.secret_key = 'something_special'
+app.secret_key = "something_special"
 
 
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
 
-@app.route('/showSummary', methods=['POST'])
+@app.route("/showSummary", methods=["POST"])
 def showSummary():
     """
     Authenticate a club using its email and display a personalized homepage.
@@ -36,7 +36,7 @@ def showSummary():
     l_dict_clubs = load_clubs()
     today_date = datetime.now()
 
-    email_connexion = request.form['email']
+    email_connexion = request.form["email"]
     try:
         selected_club = get_club_by_email(l_dict_clubs, email_connexion)
     except IndexError:
@@ -44,14 +44,14 @@ def showSummary():
         return redirect("/")
 
     return render_template(
-        'welcome.html',
+        "welcome.html",
         club=selected_club,
         competitions=l_dict_competitions,
-        today_date=today_date
+        today_date=today_date,
     )
 
 
-@app.route('/book/<competition>/<club>')
+@app.route("/book/<competition>/<club>")
 def book(competition, club):
     """
     Display the booking page for a club and competition.
@@ -76,34 +76,34 @@ def book(competition, club):
 
         name_competition = competition
         selected_competition = get_competition_by_name(
-            l_dict_competitions,
-            name_competition)
+            l_dict_competitions, name_competition
+        )
 
     except IndexError:
-        flash("The club or the competition cannot be found, please log in again !")
+        flash("Club or Competition cannot be found, please log in again !")
         return redirect("/")
 
     today_date = datetime.now()
 
     date_competition = selected_competition["date"]
     if date_competition < today_date:
-        flash("The competition's date must be superior or equal to today's date")
+        flash("Competition's date must be superior or equal to today's date")
         return render_template(
-            'welcome.html',
+            "welcome.html",
             club=selected_club,
             competitions=l_dict_competitions,
-            today_date=today_date
+            today_date=today_date,
         )
     elif selected_club and selected_competition:
         return render_template(
-            'booking.html',
+            "booking.html",
             club=selected_club,
             competition=selected_competition,
-            today_date=today_date
+            today_date=today_date,
         )
 
 
-@app.route('/purchasePlaces', methods=['POST'])
+@app.route("/purchasePlaces", methods=["POST"])
 def purchasePlaces():
     """
     Manage to book places of competition. This route processes a POST
@@ -124,47 +124,45 @@ def purchasePlaces():
     today_date = datetime.now()
 
     try:
-        name_competition = request.form['competition']
+        name_competition = request.form["competition"]
         selected_competition = get_competition_by_name(
-            l_dict_competitions,
-            name_competition
+            l_dict_competitions, name_competition
         )
 
-        name_club = request.form['club']
-        selected_club = get_club_by_name(
-            l_dict_clubs,
-            name_club
-        )
+        name_club = request.form["club"]
+        selected_club = get_club_by_name(l_dict_clubs, name_club)
 
     except IndexError:
         flash("The club or the competition cannot be found")
         return redirect("/")
 
     points_club = int(selected_club["points"])
-    places_required = int(request.form['places'])
+    places_required = int(request.form["places"])
 
     if places_required > points_club:
-        flash('Insufficient points to complete this reservation')
+        flash("Insufficient points to complete this reservation")
     elif places_required > 12:
-        flash('One club cannot book more than 12 places for a competition')
+        flash("One club cannot book more than 12 places for a competition")
     elif places_required > int(selected_competition["numberOfPlaces"]):
         flash("Not enough places available in this competition")
     else:
-        points_competition = int(selected_competition['numberOfPlaces'])
+        points_competition = int(selected_competition["numberOfPlaces"])
 
-        selected_competition['numberOfPlaces'] = str(points_competition - places_required)
+        selected_competition["numberOfPlaces"] = str(
+            points_competition - places_required
+        )
         update_competitions_in_json(l_dict_competitions)
 
-        flash('Great-booking complete!')
+        flash("Great-booking complete!")
 
-        selected_club['points'] = str(points_club - places_required)
+        selected_club["points"] = str(points_club - places_required)
         update_clubs_in_json(l_dict_clubs)
 
     return render_template(
-        'welcome.html',
+        "welcome.html",
         club=selected_club,
         competitions=l_dict_competitions,
-        today_date=today_date
+        today_date=today_date,
     )
 
 
@@ -174,9 +172,9 @@ def list_clubs():
     return render_template("clubs.html", clubs=l_dict_clubs)
 
 
-@app.route('/logout')
+@app.route("/logout")
 def logout():
-    return redirect(url_for('index'))
+    return redirect(url_for("index"))
 
 
 if __name__ == "__main__":
