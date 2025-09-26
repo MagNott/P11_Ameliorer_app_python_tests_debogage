@@ -92,3 +92,16 @@ def get_competition_by_name(p_l_dict_competitions, p_name_competition):
         if competition["name"] == p_name_competition
     ]
     return selected_competition[0]
+
+
+def get_places_booked_for_competition(p_club, p_competition_name):
+
+    places_booked = 0
+
+    if "places_booked" not in p_club:
+        p_club["places_booked"] = {}
+    else:
+        if p_competition_name in p_club["places_booked"]:
+            places_booked = p_club["places_booked"].get(p_competition_name, 0)
+
+    return places_booked

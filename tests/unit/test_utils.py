@@ -5,6 +5,7 @@ from utils import (
     update_clubs_in_json,
     load_clubs,
     load_competitions,
+    get_places_booked_for_competition,
 )
 import pytest
 from unittest.mock import mock_open, patch
@@ -33,7 +34,7 @@ def test_update_clubs_in_json(mock_file_write):
 
     assert mock_file_write().write.called
 
-    # reconstruction data of dump to look inside de file mocked
+    # reconstruction data of dump to look inside the file mocked
     handle = mock_file_write()
     written = "".join(call.args[0] for call in handle.write.call_args_list)
 
@@ -107,3 +108,27 @@ def test_competition_name_not_found_raises_error(competitions_data):
 
     with pytest.raises(IndexError):
         get_competition_by_name(competitions_data["competitions"], name_given)
+
+
+def test_get_places_booked_for_competition_no_places_booked(
+        clubs_data,
+):
+    competition_name = "Competition1"
+    places_booked = get_places_booked_for_competition(
+        clubs_data["clubs"][0],
+        competition_name
+    )
+
+    assert places_booked == 0
+
+
+def test_get_places_booked_for_competition_with_places_booked(
+        clubs_data,
+):
+    competition_name = "Competition1"
+    places_booked = get_places_booked_for_competition(
+        clubs_data["clubs"][1],
+        competition_name
+    )
+
+    assert places_booked == 5
