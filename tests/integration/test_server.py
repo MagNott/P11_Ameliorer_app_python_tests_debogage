@@ -1,4 +1,5 @@
 from unittest.mock import patch
+import pytest
 
 
 def test_email_not_valid(client):
@@ -84,7 +85,7 @@ def test_purchase_more_than_12_places_should_fail(
     )
 
     assert response.status_code == 200
-    msg = b"One club cannot book more than 12 places for a competition"
+    msg = b"You cannot book more than 12 places for a competition"
     assert msg in response.data
     assert competitions_data["competitions"][0]["numberOfPlaces"] == "25"
 
@@ -108,6 +109,31 @@ def test_purchase_12_or_less_places_should_succeed(
     assert b"Great-booking complete!" in response.data
     assert mock_file_write().write.called
     assert competitions_data["competitions"][0]["numberOfPlaces"] == "23"
+
+
+@pytest.mark.parametrize("places", ["0", "-2"])
+def test_purchase_negative_places_or_zero_should_fail_with_flash_message(
+        client,
+        patch_clubs_and_competitions,
+        clubs_data,
+        competitions_data,
+        places
+):
+
+    nom_competition = competitions_data["competitions"][0]["name"]
+    nom_club = clubs_data["clubs"][0]["name"]
+    response = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": nom_competition,
+            "club": nom_club,
+            "places": places
+        },
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    assert b"You can only book 1 to 12 places" in response.data
 
 
 def test_book_competition_when_future_date(

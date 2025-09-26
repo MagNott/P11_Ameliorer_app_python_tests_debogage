@@ -116,6 +116,7 @@ def test_full_booking_workflow_with_invalid_scenarios(
 
     nom_competition = competitions_data["competitions"][0]["name"]
     nom_club = clubs_data["clubs"][0]["name"]
+    nom_club_bis = clubs_data["clubs"][2]["name"]
 
     # SAD PATH competition not found
     response_booking_page = client.get(
@@ -146,7 +147,7 @@ def test_full_booking_workflow_with_invalid_scenarios(
             if competition["name"] == nom_competition
         )
         assert response_purchase_places.status_code == 200
-        msg = b"One club cannot book more than 12 places for a competition"
+        msg = b"You cannot book more than 12 places for a competition"
         assert msg in response_purchase_places.data
 
     # SAD PATH club has not enough points
@@ -189,13 +190,13 @@ def test_full_booking_workflow_with_invalid_scenarios(
         assert b"Great-booking complete!" in response_purchase_places.data
         assert f().write.called
 
-    # HAPPY PATH
+    # HAPPY PATH with another club
     with patch("builtins.open", mock_open()) as f:
         response_purchase_places = client.post(
             "/purchasePlaces",
             data={
                 "competition": nom_competition,
-                "club": nom_club,
+                "club": nom_club_bis,
                 "places": "10"},
             follow_redirects=True,
         )

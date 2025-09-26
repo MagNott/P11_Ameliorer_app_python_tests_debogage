@@ -29,8 +29,14 @@ def patch_clubs_and_competitions(clubs_data, competitions_data):
 def clubs_data():
     club_list = {
         "clubs": [
-            {"name": "Club1", "email": "email@club1.com", "points": "50"},
-            {"name": "Club2", "email": "email@club2.com", "points": "4"},
+            {"name": "Club1",
+             "email": "email@club1.com",
+             "points": "50"},
+            {"name": "Club2",
+             "email": "email@club2.com",
+             "points": "4",
+             "places_booked": {
+                "Competition1": 5}},
             {"name": "Club3", "email": "email@club3.com", "points": "13"},
         ]
     }

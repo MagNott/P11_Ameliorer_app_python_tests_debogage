@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, flash, url_for
 from utils import get_club_by_email, get_club_by_name, get_competition_by_name
+from utils import get_places_booked_for_competition
 from utils import update_clubs_in_json, update_competitions_in_json
 from utils import load_clubs, load_competitions
 from datetime import datetime
@@ -136,21 +137,34 @@ def purchasePlaces():
         flash("The club or the competition cannot be found")
         return redirect("/")
 
+    places_booked = get_places_booked_for_competition(
+        selected_club,
+        name_competition
+    )
+
     points_club = int(selected_club["points"])
     places_required = int(request.form["places"])
 
     if places_required > points_club:
         flash("Insufficient points to complete this reservation")
-    elif places_required > 12:
-        flash("One club cannot book more than 12 places for a competition")
+    elif places_required < 1:
+        flash("You can only book 1 to 12 places")
     elif places_required > int(selected_competition["numberOfPlaces"]):
         flash("Not enough places available in this competition")
+    elif places_booked + places_required > 12:
+        flash("You cannot book more than 12 places for a competition")
     else:
         points_competition = int(selected_competition["numberOfPlaces"])
 
         selected_competition["numberOfPlaces"] = str(
             points_competition - places_required
         )
+
+        if name_competition in selected_club["places_booked"]:
+            selected_club["places_booked"][name_competition] += places_required
+        else:
+            selected_club["places_booked"][name_competition] = places_required
+
         update_competitions_in_json(l_dict_competitions)
 
         flash("Great-booking complete!")
